@@ -9,7 +9,7 @@ import { mailgunClient } from '@/config';
 
 const DOMAIN = process.env.MAILGUN_DOMAIN as string;
 
-// WARN: might be worth setting expiration time on verification token as per best practices
+// WARN: might be worth setting expiration time on verification tokens as per best practices
 
 const addUser = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   // eslint-disable-next-line prefer-destructuring
