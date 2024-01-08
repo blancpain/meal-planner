@@ -30,6 +30,11 @@ import { setUser } from '@/stores';
 import { googleProvider, auth, facebookProvider } from '@/firebase';
 
 export function Login(props: PaperProps) {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [genericError, setGenericError] = useState('');
+  const [isVerified, setIsVerified] = useState(true);
+
   const {
     control,
     handleSubmit,
@@ -45,9 +50,6 @@ export function Login(props: PaperProps) {
   });
 
   const [login] = useLoginMutation();
-  const navigate = useNavigate();
-  const [genericError, setGenericError] = useState('');
-  const dispatch = useAppDispatch();
   const [googleLogin] = useGoogleLoginMutation();
   const [facebookLogin] = useFacebookLoginMutation();
 
@@ -109,12 +111,15 @@ export function Login(props: PaperProps) {
             setError('password', { type: 'custom', message: allErrors.password });
           }
         } else if (
+          // NOTE: handle not verified error
           error.data &&
           typeof error.data === 'object' &&
           'errors' in error.data &&
-          typeof error.data.errors === 'string'
+          typeof error.data.errors === 'string' &&
+          error.data.errors === 'not verified'
         ) {
-          setGenericError(error.data.errors);
+          setGenericError('Looks like you are not verified!');
+          setIsVerified(false);
         } else {
           setGenericError('Something went wrong. Please try again');
         }
@@ -213,6 +218,17 @@ export function Login(props: PaperProps) {
           </form>
           {genericError !== '' ? (
             <Text color="red" size="md" mt={10} id="form-error">{`${genericError}`}</Text>
+          ) : (
+            ''
+          )}
+          {!isVerified ? (
+            <Text size="md">
+              Click{' '}
+              <Text component={NavLink} to="/verify-email" underline>
+                here
+              </Text>{' '}
+              to verify your email.
+            </Text>
           ) : (
             ''
           )}

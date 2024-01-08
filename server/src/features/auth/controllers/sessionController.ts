@@ -27,11 +27,17 @@ const login = async (req: Request, res: Response, _next: NextFunction): Promise<
     }
     if (loggedUser.user.disabled) {
       req.session.destroy(() => {});
-      res.status(401).json({ errors: 'User is disabled, please contact admin' });
+      res.status(401).json({ errors: 'user disabled' });
       return;
     }
 
-    //* the req.session.user type is set in src/app.ts
+    if (!loggedUser.user.verified) {
+      req.session.destroy(() => {});
+      res.status(401).json({ errors: 'not verified' });
+      return;
+    }
+
+    // NOTE: the req.session.user type is set in tyoes/expressSession.d.ts
     req.session.user = {
       id: loggedUser.user.id,
       email: loggedUser.user.email,

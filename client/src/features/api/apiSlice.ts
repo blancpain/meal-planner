@@ -79,6 +79,20 @@ export const mangifyApi = createApi({
         body: user,
       }),
     }),
+    verifyEmail: build.mutation<void, string>({
+      query: (key) => ({
+        url: '/users/verify-email',
+        method: 'POST',
+        body: { key },
+      }),
+    }),
+    reVerifyEmail: build.mutation<void, string>({
+      query: (email) => ({
+        url: '/users/reverify-email',
+        method: 'POST',
+        body: { email },
+      }),
+    }),
     login: build.mutation<FullUserForClient, TLoginSchema>({
       query: ({ ...user }) => ({
         url: '/session/login',
@@ -240,4 +254,6 @@ export const {
   useGetMealsQuery,
   useGoogleLoginMutation,
   useFacebookLoginMutation,
+  useVerifyEmailMutation,
+  useReVerifyEmailMutation,
 } = mangifyApi;

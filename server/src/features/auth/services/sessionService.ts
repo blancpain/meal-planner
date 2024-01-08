@@ -16,6 +16,7 @@ const login = async (user: TLoginSchema): Promise<FullUserForAuth | null> => {
       role: true,
       passwordHash: true,
       disabled: true,
+      verified: true,
     },
   });
 
@@ -60,6 +61,7 @@ const authCheck = async (email: string): Promise<FullUserForAuth | null> => {
       email: true,
       role: true,
       disabled: true,
+      verified: true,
     },
   });
 

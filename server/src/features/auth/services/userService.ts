@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcryptjs';
+import { nanoid } from 'nanoid';
 import { TSignUpSchema, NonSensitiveUser } from '@/types';
 import { prisma } from '@/utils';
 
@@ -9,6 +10,7 @@ const getAll = async (): Promise<NonSensitiveUser[]> => {
       name: true,
       email: true,
       role: true,
+      verificationToken: true,
     },
   });
   return allUsers;
@@ -24,6 +26,7 @@ const getOne = async (id: string): Promise<NonSensitiveUser | null> => {
       name: true,
       email: true,
       role: true,
+      verificationToken: true,
     },
   });
   return user;
@@ -32,11 +35,13 @@ const getOne = async (id: string): Promise<NonSensitiveUser | null> => {
 const createUser = async (newUser: TSignUpSchema): Promise<NonSensitiveUser | null> => {
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(newUser.password, saltRounds);
+  const verificationToken = nanoid();
 
   const addedUser = prisma.user.create({
     data: {
       name: newUser.name ? newUser.name : '',
       email: newUser.email,
+      verificationToken,
       passwordHash,
       profile: {
         create: {
@@ -50,6 +55,7 @@ const createUser = async (newUser: TSignUpSchema): Promise<NonSensitiveUser | nu
       name: true,
       email: true,
       role: true,
+      verificationToken: true,
     },
   });
 
@@ -66,6 +72,7 @@ const deleteUser = async (id: string): Promise<NonSensitiveUser | null> => {
       name: true,
       email: true,
       role: true,
+      verificationToken: true,
     },
   });
   return deletedUser;

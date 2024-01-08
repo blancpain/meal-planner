@@ -11,15 +11,17 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(BASIC)
-  disabled     Boolean  @default(false)
-  profile      Profile?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String   @id @default(uuid())
+  name              String
+  email             String   @unique
+  passwordHash      String
+  role              Role     @default(BASIC)
+  disabled          Boolean  @default(false)
+  verified          Boolean  @default(false)
+  verificationToken String   @unique
+  profile           Profile?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([email, role])
   @@map("users")

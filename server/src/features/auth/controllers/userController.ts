@@ -5,13 +5,20 @@ import { auth } from 'firebase-admin';
 import { FullUserForClient, UserProfileForClient, signUpSchema } from '@/types';
 import { userService } from '../services/userService';
 import { exclude, extractUserProfile, prisma } from '@/utils';
+import { mailgunClient } from '@/config';
+
+const DOMAIN = process.env.MAILGUN_DOMAIN as string;
+
+// TODO: after adding email verification, we need to check if a user is verified before logging in
+// and at auth checks
+// TODO - ENSURE ALL EXISTING USERS ARE VERIFIED!!!!
 
 const addUser = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   // eslint-disable-next-line prefer-destructuring
   const body: unknown = req.body;
   const result = signUpSchema.safeParse(body);
   let zodErrors = {};
-  // NOTE: we do not want to destroy the session in test or development mode as we aren't using a mock session
+  // NOTE: we do not want to destroy the session in test or development mode as we aren't sessions per se
   if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'development') {
     // Avoid creating new sessions if there are errors
     req.session.destroy(() => {});
@@ -24,8 +31,49 @@ const addUser = async (req: Request, res: Response, _next: NextFunction): Promis
     res.status(400).json({ errors: zodErrors });
   } else {
     const savedUser = await userService.createUser(result.data);
+    if (!savedUser) {
+      res.status(400).json({ errors: 'Error during user registration' });
+      return;
+    }
+
+    // WARN: testing - link uses ngrok and "to" is hardcoded and we also use /api/ prefix since we haven't wired this on the client yet
+    const verificationLink = `https://39bf-94-236-142-108.ngrok-free.app/api/users/verify-email?key=${savedUser.verificationToken}`;
+    const messageData = {
+      from: 'admin@mangify.com',
+      to: `y_dimitrov@ymail.com`,
+      subject: 'Please verify your mangify email',
+      text: `Please verify your mangify email by clicking the link below:\n\n${verificationLink}`,
+    };
+
+    await mailgunClient.messages.create(DOMAIN, messageData);
+
     res.status(201).json(savedUser);
   }
+};
+
+const verifyUser = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+  const { key } = req.query;
+  const user = await prisma.user.findUnique({
+    where: {
+      verificationToken: key as string,
+    },
+  });
+
+  if (!user) {
+    res.status(404).json({ errors: 'Unauthorized' });
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      verified: true,
+    },
+  });
+
+  res.status(204).end();
 };
 
 const googleSignIn = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
@@ -55,6 +103,7 @@ const googleSignIn = async (req: Request, res: Response, _next: NextFunction): P
     },
   });
 
+  // NOTE: case when there is no user
   if (!user) {
     const newUser = await userService.createUser({
       email,
@@ -78,6 +127,16 @@ const googleSignIn = async (req: Request, res: Response, _next: NextFunction): P
         'updatedAt',
       ]);
 
+      // NOTE: set user to verified since we are using Google Auth
+      await prisma.user.update({
+        where: {
+          id: newUser.id,
+        },
+        data: {
+          verified: true,
+        },
+      });
+
       const filteredUser = {
         name: newUser.name,
         email: newUser.email,
@@ -95,6 +154,7 @@ const googleSignIn = async (req: Request, res: Response, _next: NextFunction): P
     return;
   }
 
+  // NOTE: case when there is a user
   const userProfile = await extractUserProfile(user.id);
 
   if (userProfile) {
@@ -104,6 +164,16 @@ const googleSignIn = async (req: Request, res: Response, _next: NextFunction): P
       'createdAt',
       'updatedAt',
     ]);
+
+    // NOTE: set user to verified since we are using Google Auth
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        verified: true,
+      },
+    });
 
     const filteredUser = {
       name: user.name,
@@ -169,6 +239,15 @@ const facebookSignIn = async (req: Request, res: Response, _next: NextFunction):
         'updatedAt',
       ]);
 
+      await prisma.user.update({
+        where: {
+          id: newUser.id,
+        },
+        data: {
+          verified: true,
+        },
+      });
+
       const filteredUser = {
         name: newUser.name,
         email: newUser.email,
@@ -196,6 +275,15 @@ const facebookSignIn = async (req: Request, res: Response, _next: NextFunction):
       'updatedAt',
     ]);
 
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        verified: true,
+      },
+    });
+
     const filteredUser = {
       name: user.name,
       email: user.email,
@@ -211,7 +299,7 @@ const facebookSignIn = async (req: Request, res: Response, _next: NextFunction):
   }
 };
 
-// NOTE: below 3 are admin only, not currently being used
+// NOTE: below 3 are not currently being used
 // if to be used in future need to accomodate firebase auth
 
 const deleteUser = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
@@ -240,4 +328,12 @@ const getOne = async (req: Request, res: Response, _next: NextFunction): Promise
   res.json(user);
 };
 
-export const userController = { getAll, getOne, addUser, deleteUser, googleSignIn, facebookSignIn };
+export const userController = {
+  getAll,
+  getOne,
+  addUser,
+  deleteUser,
+  googleSignIn,
+  facebookSignIn,
+  verifyUser,
+};

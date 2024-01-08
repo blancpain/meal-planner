@@ -92,7 +92,7 @@ export function SignUp(props: PaperProps) {
       notifications.show({
         id: 'register-success',
         icon: <IconCheck size="1rem" />,
-        title: 'Registration successful! You can now login.',
+        title: 'Registration successful! Please check your inbox for an email from us.',
         color: 'teal',
         message: '',
         autoClose: 5000,

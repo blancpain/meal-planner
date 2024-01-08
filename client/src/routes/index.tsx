@@ -9,6 +9,7 @@ import {
   SignUpRoute,
   LoginRoute,
   AboutRoute,
+  VerificationRoute,
 } from '@/routes/public';
 
 // protected routes
@@ -98,6 +99,10 @@ export function AppRoutes() {
           path: '*',
         },
       ],
+    },
+    {
+      path: '/verify-email',
+      element: <VerificationRoute />,
     },
   ]);
 

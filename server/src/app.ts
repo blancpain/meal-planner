@@ -31,7 +31,7 @@ admin.initializeApp({
 // rate limiter for /meals and /meal-generator-showcase endpoints
 const sharedLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-  max: 1500, // Maximum requests per day
+  max: 1000, // Maximum requests per day as per current API plan
   message: 'Daily request limit exceeded.', // NOTE: status code 429 is returned here
 });
 
