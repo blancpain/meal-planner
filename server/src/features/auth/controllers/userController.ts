@@ -34,11 +34,14 @@ const addUser = async (req: Request, res: Response, _next: NextFunction): Promis
       return;
     }
 
-    const verificationLink = `https://mangify.org/verify-email?key=${savedUser.verificationToken}`;
+    // NOTE: we need to encode the token in case it contains special characters to allow the browser to parse it
+    const verificationLink = `https://mangify.org/verify-email?key=${encodeURIComponent(
+      savedUser.verificationToken,
+    )}`;
     const messageData = {
-      from: '[no-reply]admin@mangify.com',
+      from: 'admin@mangify.com',
       to: `${savedUser.email}`,
-      subject: 'Please verify your mangify email',
+      subject: '[No reply]Please verify your mangify email',
       text: `Please verify your mangify email by clicking the link below:\n\n${verificationLink}`,
     };
 
@@ -94,7 +97,9 @@ const reVerifyUser = async (req: Request, res: Response, _next: NextFunction): P
   }
 
   const newVerificationToken = nanoid();
-  const verificationLink = `https://mangify.org/verify-email?key=${newVerificationToken}`;
+  const verificationLink = `https://mangify.org/verify-email?key=${encodeURIComponent(
+    newVerificationToken,
+  )}`;
 
   await prisma.user.update({
     where: {
@@ -106,9 +111,9 @@ const reVerifyUser = async (req: Request, res: Response, _next: NextFunction): P
   });
 
   const messageData = {
-    from: '[no-reply]admin@mangify.com',
+    from: 'admin@mangify.com',
     to: `${user.email}`,
-    subject: 'Please verify your mangify email',
+    subject: '[No reply]Please verify your mangify email',
     text: `Please verify your mangify email by clicking the link below:\n\n${verificationLink}`,
   };
 
