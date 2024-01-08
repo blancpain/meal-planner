@@ -37,7 +37,7 @@ const addUser = async (req: Request, res: Response, _next: NextFunction): Promis
     const verificationLink = `https://mangify.org/verify-email?key=${savedUser.verificationToken}`;
     const messageData = {
       from: '[no-reply]admin@mangify.com',
-      to: `${savedUser.email}}`,
+      to: `${savedUser.email}`,
       subject: 'Please verify your mangify email',
       text: `Please verify your mangify email by clicking the link below:\n\n${verificationLink}`,
     };
@@ -107,12 +107,13 @@ const reVerifyUser = async (req: Request, res: Response, _next: NextFunction): P
 
   const messageData = {
     from: '[no-reply]admin@mangify.com',
-    to: `${user.email}}`,
+    to: `${user.email}`,
     subject: 'Please verify your mangify email',
     text: `Please verify your mangify email by clicking the link below:\n\n${verificationLink}`,
   };
 
   await mailgunClient.messages.create(DOMAIN, messageData);
+
   res.status(204).end();
 };
 
