@@ -7,5 +7,6 @@ userRouter.post('/', userController.addUser as RequestHandler);
 userRouter.post('/google-signin', userController.googleSignIn as RequestHandler);
 userRouter.post('/facebook-signin', userController.facebookSignIn as RequestHandler);
 userRouter.post('/verify-email', userController.verifyUser as RequestHandler);
+userRouter.post('/reverify-email', userController.reVerifyUser as RequestHandler);
 
 export { userRouter };

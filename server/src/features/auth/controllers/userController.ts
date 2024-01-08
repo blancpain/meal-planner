@@ -9,9 +9,7 @@ import { mailgunClient } from '@/config';
 
 const DOMAIN = process.env.MAILGUN_DOMAIN as string;
 
-// TODO: after adding email verification, we need to check if a user is verified before logging in
-// and at auth checks
-// TODO - ENSURE ALL EXISTING USERS ARE VERIFIED!!!!
+// WARN: might be worth setting expiration time on verification tokens as per best practices
 
 const addUser = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
   // eslint-disable-next-line prefer-destructuring
@@ -36,11 +34,10 @@ const addUser = async (req: Request, res: Response, _next: NextFunction): Promis
       return;
     }
 
-    // WARN: testing - link uses ngrok and "to" is hardcoded and we also use /api/ prefix since we haven't wired this on the client yet
-    const verificationLink = `https://39bf-94-236-142-108.ngrok-free.app/api/users/verify-email?key=${savedUser.verificationToken}`;
+    const verificationLink = `https://mangify.org/verify-email?key=${savedUser.verificationToken}`;
     const messageData = {
-      from: 'admin@mangify.com',
-      to: `y_dimitrov@ymail.com`,
+      from: '[no-reply]admin@mangify.com',
+      to: `${savedUser.email}}`,
       subject: 'Please verify your mangify email',
       text: `Please verify your mangify email by clicking the link below:\n\n${verificationLink}`,
     };
@@ -52,15 +49,16 @@ const addUser = async (req: Request, res: Response, _next: NextFunction): Promis
 };
 
 const verifyUser = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
-  const { key } = req.query;
+  const { key } = req.body as { key: string };
+
   const user = await prisma.user.findUnique({
     where: {
-      verificationToken: key as string,
+      verificationToken: key,
     },
   });
 
   if (!user) {
-    res.status(404).json({ errors: 'Unauthorized' });
+    res.status(401).json({ errors: 'Unauthorized' });
     return;
   }
 
@@ -70,9 +68,51 @@ const verifyUser = async (req: Request, res: Response, _next: NextFunction): Pro
     },
     data: {
       verified: true,
+      verificationToken: '',
     },
   });
 
+  res.status(204).end();
+};
+
+const reVerifyUser = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+  const { email } = req.body as { email: string };
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    res.status(401).json({ errors: 'Unauthorized' });
+    return;
+  }
+
+  if (user.verified) {
+    res.status(204).end();
+  }
+
+  const newVerificationToken = nanoid();
+  const verificationLink = `https://mangify.org/verify-email?key=${newVerificationToken}`;
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      verificationToken: newVerificationToken,
+    },
+  });
+
+  const messageData = {
+    from: '[no-reply]admin@mangify.com',
+    to: `${user.email}}`,
+    subject: 'Please verify your mangify email',
+    text: `Please verify your mangify email by clicking the link below:\n\n${verificationLink}`,
+  };
+
+  await mailgunClient.messages.create(DOMAIN, messageData);
   res.status(204).end();
 };
 
@@ -336,4 +376,5 @@ export const userController = {
   googleSignIn,
   facebookSignIn,
   verifyUser,
+  reVerifyUser,
 };
