@@ -92,4 +92,4 @@ Mangify is continually evolving. Future features in the pipeline include:
 
 Explore the power of Mangify now! Register to unleash the full potential, plan your meals effortlessly, and enjoy a seamless meal planning experience.
 
-[**TRY MANGIFY**](https://www.mangify.org)
+[**TRY MANGIFY**](https://mangify.net)
