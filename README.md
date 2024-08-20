@@ -1,3 +1,5 @@
+
+⚠️ **Mangify is currently undergoing some major changes - stay tuned!**
 # Mangify 🥗 🚀
 
 Welcome to Mangify, your ultimate meal planning companion built with a powerful tech stack featuring Typescript, Postgres, Express, React, and Node. This full-stack app empowers users to streamline meal planning, calculate personalized macros, and generate comprehensive shopping lists.
