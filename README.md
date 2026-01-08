@@ -15,7 +15,7 @@ We offer a seamless meal planning experience, from quick meal suggestions to det
 
 ## Tech Stack
 
-Mangify leverages a cutting-edge tech stack to deliver a robust and efficient user experience:
+Cutting-edge tech stack to deliver a robust and efficient user experience:
 
 - 📜 **Typescript**
 - 🛢️ **Postgres & Redis**
@@ -25,7 +25,7 @@ Mangify leverages a cutting-edge tech stack to deliver a robust and efficient us
 
 ## User Authentication
 
-Mangify ensures secure user authentication using Redis for session storage and express-session for session ID generation. This approach minimizes client-side exposure of user credentials, enhancing overall security.
+Secure user authentication using Redis for session storage and express-session for session ID generation. This approach minimizes client-side exposure of user credentials, enhancing overall security.
 
 - 🔒 **Session Management:** Redis serves a dual purpose. It is employed for secure server-side session storage. Additionaly, Redis aids in 1-hour caching of meals, delivering a swift and responsive experience.
 - 🍪 **Cookie Storage:** The session ID is securely stored client-side in a cookie, enhancing user security.
@@ -67,14 +67,14 @@ Mangify ensures secure user authentication using Redis for session storage and e
 
 ## Code Quality
 
-Mangify is built with a strong emphasis on code quality and consistency:
+Built with a strong emphasis on code quality and consistency:
 
 - 🚨 **Linting:** The codebase is rigorously checked for potential issues and stylistic inconsistencies using ESLint.
 - ✨ **Formatting:** Code formatting is enforced using Prettier, ensuring a clean and consistent codebase throughout the project.
 
 ## Future Planned Features
 
-Mangify is continually evolving. Future features in the pipeline include:
+Continually evolving. Future features in the pipeline include:
 
 - 💾 **Meal Saving and Deletion:** Save and unsave meals.
 - 🤖 **Automated testing integreated into CI/CD:** Add testing to the health-check pipeline, currently only linting is included.
