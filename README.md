@@ -1,12 +1,9 @@
 
-⚠️ **Mangify is currently undergoing some major changes - stay tuned!**
-# Mangify 🥗 🚀
-
-Welcome to Mangify, your ultimate meal planning companion built with a powerful tech stack featuring Typescript, Postgres, Express, React, and Node. This full-stack app empowers users to streamline meal planning, calculate personalized macros, and generate comprehensive shopping lists.
+⚠️ **Currently undergoing some major changes - stay tuned!**
 
 ## Overview
 
-Mangify offers a seamless meal planning experience, from quick meal suggestions to detailed week-long plans. When you register, unlock the full potential of Mangify: generate meals, calculate macros, create shopping lists, and access detailed cooking instructions.
+We offer a seamless meal planning experience, from quick meal suggestions to detailed week-long plans.
 
 ## Key Features
 
@@ -87,9 +84,3 @@ Mangify is continually evolving. Future features in the pipeline include:
 - [Landing page hero image by engin akyurt on Unsplash](https://unsplash.com/photos/red-green-and-yellow-chili-peppers-and-green-chili-peppers-Y5n8mCpvlZU)
 - [Missing meal images from flaticon](https://www.flaticon.com/free-icons/plate)
 - [Missing ingredient images from flaticon](https://www.flaticon.com/free-icons/harvest)
-
-## Try It Out!
-
-Explore the power of Mangify now! Register to unleash the full potential, plan your meals effortlessly, and enjoy a seamless meal planning experience.
-
-[**TRY MANGIFY**](https://mangify.net)
